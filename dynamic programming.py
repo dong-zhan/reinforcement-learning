@@ -10,7 +10,7 @@ def imps():
 	import random
 		
 def Parameters():
-	global gamma, gridSizeX, gridSizeY, gridSizeX_1, gridSizeY_1, actions, numIterations, weight, rewardPos, rewards, defaultReward
+	global gamma, gridSizeX, gridSizeY, gridSizeX_1, gridSizeY_1, actions, numIterations, weight, terminationStates, rewards, defaultReward
 	gamma = 1 # discounting rate
 	gridSizeX = 4
 	gridSizeY = 4
@@ -21,12 +21,12 @@ def Parameters():
 	weight = 1./len(actions)
 	
 	defaultReward = -1
-	rewardPos = np.array([(0,0), (3,3)])
+	terminationStates = np.array([(0,0), (3,3)])
 	rewards = np.array([0, 0])
 	
-def GetIndexInRewardPos(pos):
-	global rewardPos
-	for i, p in enumerate(rewardPos):
+def GetIndexInTerminationStates(pos):
+	global terminationStates
+	for i, p in enumerate(terminationStates):
 		comparison = pos == p
 		if comparison.all():
 			return i
@@ -34,7 +34,7 @@ def GetIndexInRewardPos(pos):
 	
 def getTargetPosAndReward(initPos, action):
 	global rewards, gridSizeX_1, gridSizeY_1
-	idx = GetIndexInRewardPos(initPos)
+	idx = GetIndexInTerminationStates(initPos)
 	if not idx == -1:
 		return initPos, rewards[idx]
 			
@@ -63,3 +63,7 @@ def PolicyEvaluation():
 			valueMapNext[state[0], state[1]] = weightedRewards
 			
 		swapValueMaps()
+	
+	print(valueMap)
+			
+			
