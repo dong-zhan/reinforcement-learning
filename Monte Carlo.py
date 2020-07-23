@@ -11,12 +11,12 @@ def imps():
 def params():
 	global gamma, gridSizeX, gridSizeY, gridSizeY_1, gridSizeX_1
 	global actions, numIterations
-	global rewardPos, defaultReward, rewards
+	global terminationStates, defaultReward, rewards
 	
 	gamma = 0.6 # discounting rate
 
 	gridSizeX = 4
-	gridSizeY = 4
+	gridSizeY = 6
 	gridSizeY_1 = gridSizeY - 1
 	gridSizeX_1 = gridSizeX - 1
 
@@ -24,12 +24,12 @@ def params():
 	numIterations = 1				#set numIterations to 1, and run calc, print(returns, V), and observe what calc is approximating...
 	
 	defaultReward = -1
-	rewardPos = np.array([(0,0), (3,3)])
+	terminationStates = np.array([(0,0), (3,3)])
 	rewards = np.array([0, 0])
 	
-def GetIndexInRewardPos(pos):
-	global rewardPos
-	for i, p in enumerate(rewardPos):
+def GetIndexInTerminationStates(pos):
+	global terminationStates
+	for i, p in enumerate(terminationStates):
 		comparison = pos == p
 		if comparison.all():
 			return i
@@ -44,7 +44,7 @@ def listInListArray(l, la):
 	
 def getTargetPosAndReward(initPos, action):
 	global rewards, gridSizeX_1, gridSizeY_1
-	idx = GetIndexInRewardPos(initPos)
+	idx = GetIndexInTerminationStates(initPos)
 	if not idx == -1:
 		return initPos, rewards[idx]
 			
@@ -52,15 +52,15 @@ def getTargetPosAndReward(initPos, action):
 	
 def init():
 	global V, returns, states
-	V = np.zeros((gridSize, gridSize))
-	returns = {(i, j):list() for i in range(gridSize) for j in range(gridSize)}
-	states = [[i, j] for i in range(gridSize) for j in range(gridSize)]
+	V = np.zeros((gridSizeY, gridSizeX))
+	returns = {(y, x):list() for y in range(gridSizeY) for x in range(gridSizeX)}
+	states = [[y, x] for y in range(gridSizeY) for x in range(gridSizeX)]
 
 def generateEpisode(initState):	  	#generate episode following PI: S0, A0, R1, S1, 
-	global rewardPos
+	global terminationStates
 	episode = []
 	while True:
-		if listInListArray(initState, rewardPos) :
+		if listInListArray(initState, terminationStates) :
 			return episode
 		action = random.choice(actions)
 		finalState, reward = getTargetPosAndReward(np.array(initState), action)
@@ -81,5 +81,9 @@ def calc():
 				returns[idx].append(G)								#append G to returns
 		
 	for v in returns:
-		V[v] = np.average(returns[v])		#average(Returns(St)) -> V(St)
+		if len(returns[v]) > 0 :
+			V[v] = np.average(returns[v])		#average(Returns(St)) -> V(St)
+		else :
+			V[v] = 0
 
+	print(V)
