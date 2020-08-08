@@ -1,3 +1,5 @@
+#reference: https://www.freecodecamp.org/news/diving-deeper-into-reinforcement-learning-with-q-learning-c18d0db58efe/
+
 def imps():
 	global np, random
 	import numpy as np
